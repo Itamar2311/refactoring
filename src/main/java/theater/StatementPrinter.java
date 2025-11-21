@@ -8,8 +8,8 @@ import java.util.Map;
  * This class generates a statement for a given invoice of performances.
  */
 public class StatementPrinter {
-    public Invoice invoice;
-    public Map<String, Play> plays;
+    private Invoice invoice;
+    private Map<String, Play> plays;
 
     public StatementPrinter(Invoice invoice, Map<String, Play> plays) {
         this.invoice = invoice;
@@ -21,6 +21,7 @@ public class StatementPrinter {
      * @return the formatted statement
      * @throws RuntimeException if one of the play types is not known
      */
+    @SuppressWarnings({"checkstyle:MagicNumber", "checkstyle:NeedBraces", "checkstyle:FinalLocalVariable", "checkstyle:SuppressWarnings", "checkstyle:LineLength"})
     public String statement() {
         int totalAmount = 0;
         int volumeCredits = 0;
