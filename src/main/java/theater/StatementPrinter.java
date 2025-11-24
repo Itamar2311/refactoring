@@ -24,30 +24,40 @@ public class StatementPrinter {
      */
     public String statement() {
         int totalAmount = 0;
-        int volumeCredits = 0;
+        totalAmount = getTotalAmount();
+        final int volumeCredits = getTotalVolumeCredits();
         final StringBuilder result = new StringBuilder();
         result.append("Statement for ")
                 .append(invoice.getCustomer())
                 .append(System.lineSeparator());
 
         for (Performance p : invoice.getPerformances()) {
-
             final int rslt = getAmount(p, getPlay(p));
-
-            // add volume credits
-            volumeCredits += getVolumeCredits(p);
-
-            // print line for this order
             result.append(String.format("  %s: %s (%s seats)%n",
                     getPlay(p).getName(),
                     usd(rslt),
                     p.getAudience()));
-            totalAmount += rslt;
         }
-        final String line = String.format("Amount owed is %s%n", usd(totalAmount));
-        result.append(line);
+
+        result.append(String.format("Amount owed is %s%n", usd(totalAmount)));
         result.append(String.format("You earned %s credits%n", volumeCredits));
         return result.toString();
+    }
+
+    private int getTotalAmount() {
+        int total = 0;
+        for (Performance p : invoice.getPerformances()) {
+            total += getAmount(p, getPlay(p));
+        }
+        return total;
+    }
+
+    private int getTotalVolumeCredits() {
+        int total = 0;
+        for (Performance p : invoice.getPerformances()) {
+            total += getVolumeCredits(p);
+        }
+        return total;
     }
 
     private int getVolumeCredits(Performance performance) {
