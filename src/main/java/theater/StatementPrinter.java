@@ -29,37 +29,36 @@ public class StatementPrinter {
         result.append("Statement for ")
                 .append(invoice.getCustomer())
                 .append(System.lineSeparator());
-        final NumberFormat frmt = NumberFormat.getCurrencyInstance(Locale.US);
 
         for (Performance p : invoice.getPerformances()) {
 
             final int rslt = getAmount(p, getPlay(p));
 
             // add volume credits
-            volumeCredits = getVolumeCredits(p, volumeCredits);
+            volumeCredits += getVolumeCredits(p);
 
             // print line for this order
-            result.append(String.format(
-                    "  %s: %s (%s seats)%n",
+            result.append(String.format("  %s: %s (%s seats)%n",
                     getPlay(p).getName(),
-                    frmt.format(rslt / Constants.PERCENT_FACTOR),
-                    p.getAudience()
-            ));
+                    usd(rslt),
+                    p.getAudience()));
             totalAmount += rslt;
         }
-        result.append(String.format("Amount owed is %s%n", frmt.format(totalAmount / Constants.PERCENT_FACTOR)));
+        final String line = String.format("Amount owed is %s%n", usd(totalAmount));
+        result.append(line);
         result.append(String.format("You earned %s credits%n", volumeCredits));
         return result.toString();
     }
 
-    private static int getVolumeCredits(Performance performance) {
-        int result = 0;
-        result = Math.max(performance.getAudience() - Constants.BASE_VOLUME_CREDIT_THRESHOLD, 0);
-        // add extra credit for every five comedy attendees
+    private int getVolumeCredits(Performance performance) {
+        int credits = Math.max(performance.getAudience() - Constants.BASE_VOLUME_CREDIT_THRESHOLD, 0);
+
+        // extra credit for comedy
         if ("comedy".equals(getPlay(performance).getType())) {
-            result += performance.getAudience() / Constants.COMEDY_EXTRA_VOLUME_FACTOR;
+            credits += performance.getAudience() / Constants.COMEDY_EXTRA_VOLUME_FACTOR;
         }
-        return result;
+
+        return credits;
     }
 
     private static Play getPlay(Performance performance) {
@@ -90,5 +89,10 @@ public class StatementPrinter {
                 throw new RuntimeException(String.format("unknown type: %s", getPlay(performance).getType()));
         }
         return rslt;
+    }
+
+    private String usd(int amount) {
+        return NumberFormat.getCurrencyInstance(Locale.US)
+                .format(amount / (double) Constants.PERCENT_FACTOR);
     }
 }
