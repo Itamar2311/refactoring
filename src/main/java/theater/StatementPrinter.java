@@ -1,10 +1,9 @@
+
 package theater;
 
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Map;
-
-import static theater.Constants.*;
 
 /**
  * This class generates a statement for a given invoice of performances.
